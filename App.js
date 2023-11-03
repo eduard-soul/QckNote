@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image,  } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import * as FileSystem from 'expo-file-system';
+import { shareAsync } from 'expo-sharing';
 import Switch from './components/Switch';
+
 import { BlurView } from 'expo-blur'
 
 // REACT NATIVE APP
@@ -73,7 +76,10 @@ export default function App() {
     const DARK_SETTINGS_BUTTONS_TEXT = '#DBDADA';
     const LIGHT_SETTINGS_BUTTONS_TEXT = '#292929';
 
-    const [isDarkModeActive, setIsDarkModeActive] = useState(true);
+    const [isDarkModeActive, setIsDarkModeActive] = useState(false);
+
+    const [noteTitle, setNoteTitle] = useState('');
+    const [note, setNote] = useState('');
 
     const {height, width} = useWindowDimensions();
     const [logoWrapperWrapperHeight, setLogoWrapperHeight] = useState(height * 0.125);
@@ -81,10 +87,68 @@ export default function App() {
     const [spacerWrapperHeight, setSpacerWrapperHeight] = useState(height * 0.03)
 
     const [isLanguageSwitch, setIsLanguageSwitch] = useState(false);
+    const [isSettingsActive, setIsSettingsActive] = useState(false);
 
+    const [permissions, setPermissions] = useState();
     //setStatusBarBackgroundColor('rgba(255,255,255,0.5)');
     // listen to dimension change
+    const saveNote = async () => {
+        console.log('press');
+        if (note.length) {
+            let filename = 'qck_note.txt';
+
+            if (noteTitle.length) {
+                filename = noteTitle + '.txt';
+            } else if (note.length > 10) {
+                filename = note.substring(0, 10) + '.txt';
+            } 
+            createFile(filename, note);
+        }
+        //const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+    }
+
+    const checkPermmisions = async () => {
+         setPermissions(await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync());
+    }
+    
+    const createFile = async (filename, content) => {
+        try {
+            const fileUri = FileSystem.documentDirectory + filename;
+            console.log(fileUri)
+            await FileSystem.writeAsStringAsync(fileUri, content);
+
+            if (Platform.OS === 'ios') {
+                const share = await shareAsync(fileUri);
+            } else if (Platform.OS === 'android') {
+                let tempPermissions;
+
+                if (!permissions) {
+                    tempPermissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                    setPermissions(tempPermissions);
+                }
+                else {
+                    tempPermissions = permissions; 
+                }
+                if (tempPermissions.granted) {
+                    const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+                    await FileSystem.StorageAccessFramework.createFileAsync(tempPermissions.directoryUri, filename, 'text/plain')
+                    .then(async (uri) => {
+                        console.log(uri);
+                        await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                    })
+                    .catch(e => console.log(e));
+                } else {
+                    shareAsync(uri);
+                }
+            }
+
+        } catch (error) {
+            console.error(`Error creating file ${filename}: ${error}`);
+        }
+    };
+
     useEffect(() => {
+        //checkPermmisions();
     }, []);
 
     return (
@@ -131,7 +195,9 @@ export default function App() {
                         }]}>
                             <View style={[styles.noteTitleWrapper, {
                             }]}>
-                                <TextInput placeholder='Optional title..' 
+                                <TextInput 
+                                    value={noteTitle} onChangeText={(e) => {setNoteTitle(e)}}
+                                    placeholder='Optional title..' 
                                     placeholderTextColor={isDarkModeActive ? DARK_NOTE_TITLE_PLACEHOLDER : LIGHT_NOTE_TITLE_PLACEHOLDER} 
                                     style={[styles.noteTitle, {
                                         marginTop: '5%',
@@ -146,7 +212,8 @@ export default function App() {
                                 {
                                 }
                             ]}>
-                                <Pressable style={[styles.settingsButton,
+                                <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
+                                style={[styles.settingsButton,
                                     {
                                     }
                                 ]}>
@@ -170,7 +237,9 @@ export default function App() {
                         <View style={[styles.noteTextWrapper, {
                         }]}
                         >
-                            <TextInput placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
+                            <TextInput 
+                                value={note} onChangeText={(e) => {setNote(e)}}
+                                placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
                                 placeholder='Just start typing..' multiline={true}
                                 style={[styles.noteText,
                                     {
@@ -191,9 +260,10 @@ export default function App() {
                                 justifyContent: 'flex-end',
                             }
                         ]}>
-                            <Pressable style={[styles.validateButtonWrapper, {
+                            <Pressable onPress={saveNote}
+                            style={[styles.validateButtonWrapper, {
                                 height: 90,
-                                width: 90,
+                                    width: 90,
                             }]}>
                                 <View  style={[styles.validateButton,
                                     {
@@ -220,6 +290,7 @@ export default function App() {
                         </View>
                         <View style={[styles.settingsWrapper,
                             {
+                                display: isSettingsActive ? 'flex' : 'none',
                                 opacity: 1,
                                 borderRadius: 20,
                                 position: 'absolute',
@@ -263,8 +334,10 @@ export default function App() {
                                     ]}>
                                     </View>
                                 </View>
-                                <Pressable style={[styles.updateFolderButtonWrapper, 
+                                <Pressable onPress={checkPermmisions}
+                                style={[styles.updateFolderButtonWrapper, 
                                     {
+                                        display: Platform.OS === 'android' ? 'flex' : 'none',
                                         borderRadius: 20,
                                         marginBottom: '3%',
                                         height: '13.3%',
@@ -290,13 +363,10 @@ export default function App() {
                                             alignItems: 'center',
                                         }
                                     ]}>
-                                        <Text style={[styles.updateButtonText,
+                                        <Text 
+                                            style={[styles.updateButtonText,
                                             {
                                                 color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
-                                                fontWeight: 800,
-                                                fontSize: 19,
-                                                fontWeight: 600,
-                                                marginTop: -5,
                                             }
                                         ]}>Update Destination Folder</Text>
                                     </View>
@@ -396,7 +466,8 @@ export default function App() {
                                 justifyContent: 'flex-end',
                             }
                             ]}>
-                                <Pressable style={[styles.backHomeButtonWrapper, {
+                                <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
+                                style={[styles.backHomeButtonWrapper, {
                                     height: 90,
                                     width: 90,
                                 }]}>
@@ -549,4 +620,10 @@ const styles = StyleSheet.create({
         width: '49%',
         resizeMode: 'contain',
     },
+    updateButtonText: {
+        fontWeight: 800,
+        fontSize: 19,
+        fontWeight: 600,
+        marginTop: -5,
+    }
 });
