@@ -22,10 +22,10 @@ export default function App() {
     const DARK_NOTE_TITLE = '#E6E6E6';
     const LIGHT_NOTE_TITLE = '#1C1C1C';
 
-    const DARK_NOTE_TITLE_PLACEHOLDER = '#F2F2F2';
+    const DARK_NOTE_TITLE_PLACEHOLDER = '#282828';
     const LIGHT_NOTE_TITLE_PLACEHOLDER = '#D6D6D6';
 
-    const DARK_NOTE_TEXT_PLACEHOLDER = '#E6E6E6'
+    const DARK_NOTE_TEXT_PLACEHOLDER = '#868686'
     const LIGHT_NOTE_TEXT_PLACEHOLDER = '#5F5F5F'
 
     const DARK_NOTE_TEXT = '#E6E6E6'
@@ -34,7 +34,7 @@ export default function App() {
     const DARK_DONE_BUTTON_CHECKMARK = '#D4FFD0'
     const LIGHT_DONE_BUTTON_CHECKMARK = '#222B21'
 
-    const DARK_BACKGROUND_DONE_BUTTON = '#222B21'
+    const DARK_BACKGROUND_DONE_BUTTON = '#131313'
     const LIGHT_BACKGROUND_DONE_BUTTON = '#F3F8F2'
 
     const DARK_BACKGROUND_BACK_BUTTON = '#131313'
@@ -86,7 +86,10 @@ export default function App() {
     const [noteTitleAndButtonHeight, setNoteTitleAndButtonHeight] = useState(height * 0.08);
     const [spacerWrapperHeight, setSpacerWrapperHeight] = useState(height * 0.03)
 
-    const [isLanguageSwitch, setIsLanguageSwitch] = useState(false);
+    const [isLanguageForced, setIsLanguageForced] = useState(false);
+    const [isHighContrast, setIsHighContrast] = useState(false);
+    const [isNoteBottom, setIsNoteBottom] = useState(false);
+
     const [isSettingsActive, setIsSettingsActive] = useState(false);
 
     const [permissions, setPermissions] = useState();
@@ -100,17 +103,26 @@ export default function App() {
             if (noteTitle.length) {
                 filename = noteTitle + '.txt';
             } else if (note.length > 10) {
-                filename = note.substring(0, 10) + '.txt';
+                let temp = note.substring(0, 10) + '.txt';
+                filename = temp.replace(/[^a-zA-Z0-9]/g, '');
+                if (!filename) {
+                    filename = 'qck_note.txt';
+                }
             } 
             createFile(filename, note);
         }
         //const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
     }
 
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
+
     const checkPermmisions = async () => {
          setPermissions(await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync());
     }
     
+
     const createFile = async (filename, content) => {
         try {
             const fileUri = FileSystem.documentDirectory + filename;
@@ -196,6 +208,7 @@ export default function App() {
                             <View style={[styles.noteTitleWrapper, {
                             }]}>
                                 <TextInput 
+                                    keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
                                     value={noteTitle} onChangeText={(e) => {setNoteTitle(e)}}
                                     placeholder='Optional title..' 
                                     placeholderTextColor={isDarkModeActive ? DARK_NOTE_TITLE_PLACEHOLDER : LIGHT_NOTE_TITLE_PLACEHOLDER} 
@@ -210,14 +223,19 @@ export default function App() {
                             </View>
                             <View style={[styles.settingsButtonWrapper,
                                 {
+                                    // Call this function to dismiss the keyboard}
                                 }
                             ]}>
-                                <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
+                                <Pressable onPress={() => {
+                                    dismissKeyboard();
+                                    setIsSettingsActive(!isSettingsActive);
+                                }}
                                 style={[styles.settingsButton,
                                     {
                                     }
                                 ]}>
-                                    <Image source={require('./assets/SettingsIcon.png')} style={[styles.settingsButtonIcon, {
+                                    <Image source={isDarkModeActive ? require('./assets/DarkSettingsIcon.png') : require('./assets/WhiteSettingsIcon.png')}
+                                     style={[styles.settingsButtonIcon, {
                                     }]}></Image>
                                 </Pressable>
                             </View>
@@ -238,11 +256,15 @@ export default function App() {
                         }]}
                         >
                             <TextInput 
+                                keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
                                 value={note} onChangeText={(e) => {setNote(e)}}
                                 placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
-                                placeholder='Just start typing..' multiline={true}
+                                placeholder='Just start typing..' 
+                                multiline autoFocus
                                 style={[styles.noteText,
                                     {
+                                        textAlignVertical: isNoteBottom ? 'bottom' : 'top',
+                                        marginBottom: Platform.OS === 'ios' ? '9.5%' : '10%',
                                         fontSize: 20,
                                         color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
                                     }
@@ -340,7 +362,7 @@ export default function App() {
                                         display: Platform.OS === 'android' ? 'flex' : 'none',
                                         borderRadius: 20,
                                         marginBottom: '3%',
-                                        height: '13.3%',
+                                        height: '14.3%',
                                         width: '86.18%',
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_UPDATE_FOLDER_BUTTON : LIGHT_BACKGROUND_UPDATE_FOLDER_BUTTON,
                                         marginTop: '5%',
@@ -374,31 +396,140 @@ export default function App() {
                                 <View style={[styles.buttonSettingsWrapper,
                                     {
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                        marginTop: Platform.OS === 'android' ? '0%' : '5%',
+                                        overflow: 'hidden',
                                     }
                                 ]}>
-                                    <Pressable style={styles.settingsPressable}>
+                                    <Pressable onPress={() => {setIsLanguageForced(false)}}
+                                     style={styles.settingsPressable}>
                                         <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            //color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
+                                            color: 'grey'
+                                            }]}>
                                             System  
                                             Language
                                         </Text>
                                     </Pressable>
                                     <View style={styles.settingsTogglePressable}>
-                                        <Switch></Switch>
+                                        <Switch
+                                            onChange={() => {setIsLanguageForced(!isLanguageForced)}}
+                                            whichSwitch={'language'}
+                                            isActive={isLanguageForced}
+                                        ></Switch>
                                     </View>
-                                    <Pressable style={styles.settingsPressable}>
+                                    <Pressable onPress={() => {setIsLanguageForced(true)}}
+                                    style={styles.settingsPressable}>
                                         <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            //color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
+                                            color: 'grey'
+                                        }]}>
                                             Force  English
                                         </Text>
                                     </Pressable>
+                                    <View style={[styles.underConstructionWrapper,
+                                        {
+                                            position: 'absolute',
+                                            height: '100%',
+                                            width: '100%',
+                                            borderRadius: 20,
+                                            opacity: isDarkModeActive ? 0.05 : 0.1,
+                                            flexDirection: 'row',
+                                            left: '-5%',
+                                        }
+                                    ]}>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                    </View>
+                                </View>
+                                <View style={[styles.buttonSettingsWrapper,
+                                    {
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                        overflow: 'hidden',
+                                    }
+                                ]}>
+                                    <Pressable onPress={() => {setIsHighContrast(false)}}
+                                    style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            //color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
+                                            color: 'grey',
+                                        }]}>
+                                            Low Contrast 
+                                        </Text>
+                                    </Pressable>
+                                    <Pressable style={styles.settingsTogglePressable}>
+                                        <Switch
+                                            onChange={() => {setIsHighContrast(!isHighContrast)}}
+                                            whichSwitch={'contrast'}
+                                            isActive={isHighContrast}
+                                        ></Switch> 
+                                    </Pressable>
+                                    <Pressable onPress={() => {setIsHighContrast(true)}}
+                                    style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            //color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT
+                                            color: 'grey',
+                                            }]}>
+                                            High Contrast 
+                                        </Text>
+                                    </Pressable>
+                                    <View style={[styles.underConstructionWrapper,
+                                        {
+                                            position: 'absolute',
+                                            height: '100%',
+                                            width: '100%',
+                                            borderRadius: 20,
+                                            opacity: isDarkModeActive ? 0.05 : 0.1,
+                                            flexDirection: 'row',
+                                            left: '-5%',
+                                        }
+                                    ]}>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
+                                        <View style={{top: '-10%', left: '-20%', height: '170%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
+                                    </View>
                                 </View>
                                 <View style={[styles.buttonSettingsWrapper,
                                     {
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
                                     }
                                 ]}>
-                                    <Pressable style={styles.settingsPressable}>
+                                    <Pressable onPress={() => {setIsNoteBottom(false)}}
+                                    style={styles.settingsPressable}>
                                         <Text style={[styles.settingsPressableText,{
                                             color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
                                             Note Text
@@ -406,9 +537,14 @@ export default function App() {
                                         </Text>
                                     </Pressable>
                                     <Pressable style={styles.settingsTogglePressable}>
-                                        <Switch></Switch>
+                                        <Switch
+                                            onChange={() => {setIsNoteBottom(!isNoteBottom)}}
+                                            whichSwitch={'topOrBottom'}
+                                            isActive={isNoteBottom}
+                                        ></Switch>
                                     </Pressable>
-                                    <Pressable style={styles.settingsPressable}>
+                                    <Pressable onPress={() => {setIsNoteBottom(true)}}
+                                    style={styles.settingsPressable}>
                                         <Text style={[styles.settingsPressableText,{
                                             color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
                                             Note Text
@@ -417,41 +553,30 @@ export default function App() {
                                     </Pressable>
                                 </View>
                                 <View style={[styles.buttonSettingsWrapper,
-                                    {
-                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
-                                    }
-                                ]}>
-                                    <Pressable style={styles.settingsPressable}>
-                                        <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
-                                            Low Contrast 
-                                        </Text>
-                                    </Pressable>
-                                    <Pressable style={styles.settingsTogglePressable}>
-                                        <Switch></Switch> 
-                                    </Pressable>
-                                    <Pressable style={styles.settingsPressable}>
-                                        <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
-                                            High Contrast 
-                                        </Text>
-                                    </Pressable>
-                                </View>
-                                <View style={[styles.buttonSettingsWrapper,
                                 {
                                     backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
                                 }
                             ]}>
-                                <Pressable style={styles.settingsPressable}>
+                                <Pressable onPress={() => {
+                                    setIsDarkModeActive(false);
+                                }}
+                                    style={styles.settingsPressable}>
                                     <Text style={[styles.settingsPressableText,{
                                             color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
                                         {'Light\nMode'} 
                                     </Text>
                                 </Pressable>
                                 <Pressable style={styles.settingsTogglePressable}>
-                                    <Switch></Switch>
+                                    <Switch 
+                                        onChange={() => {setIsDarkModeActive(!isDarkModeActive)}}
+                                        whichSwitch={'nightMode'}
+                                        isActive={isDarkModeActive}
+                                    ></Switch>
                                 </Pressable>
-                                <Pressable style={styles.settingsPressable}>
+                                <Pressable onPress={() => {
+                                    setIsDarkModeActive(true);
+                                }}
+                                style={styles.settingsPressable}>
                                     <Text style={[styles.settingsPressableText,{
                                             color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
                                         {'Dark\nMode'} 

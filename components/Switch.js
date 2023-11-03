@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState, memo } from 'react';
+import { View, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 
-const Switch = () => {
-    const [isOn, setIsOn] = useState(false);
+const Switch = (props, onChange) => {
 
     const handlePress = () => {
-        setIsOn(!isOn);
+        props.onChange(!props.isActive)
     };
 
     return (
-        <TouchableOpacity style={{
+        <Pressable style={{
             overflow: 'hidden',
         }} onPress={handlePress}>
             <View style={{
@@ -20,11 +19,11 @@ const Switch = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
             }}>
-                <View style={[styles.container, isOn ? styles.containerOn : null]}>
-                    <View style={[styles.circle, isOn ? styles.circleOn : null]} />
+                <View style={[styles.container, props.isActive ? styles.containerOn : null]}>
+                    <View style={[styles.circle, props.isActive ? styles.circleOn : null]} />
                 </View>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 
@@ -54,4 +53,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Switch;
+export default memo(Switch);
