@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image,  } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useFonts } from 'expo-font';
-import { setStatusBarBackgroundColor } from 'expo-status-bar';
-import { BlurView } from 'expo-blur';
+import Switch from './components/Switch';
+import { BlurView } from 'expo-blur'
 
 // REACT NATIVE APP
 
 export default function App() {
-    const DARK_BACKGROUD = '#222120';
+    const DARK_BACKGROUD = '#1F1F1F';
     const LIGHT_BACKGROUND = '#FFF9F3';
 
     const DARK_CARD = '#101010';
@@ -35,6 +34,9 @@ export default function App() {
     const DARK_BACKGROUND_DONE_BUTTON = '#222B21'
     const LIGHT_BACKGROUND_DONE_BUTTON = '#F3F8F2'
 
+    const DARK_BACKGROUND_BACK_BUTTON = '#131313'
+    const LIGHT_BACKGROUND_BACK_BUTTON = '#FAFAFA'
+
     const DARK_SETTINGS_BACK_BUTTON_ICON = '#444444'
     const LIGHT_SETTINGS_BACK_BUTTON_ICON = '#E2E2E2'
 
@@ -47,8 +49,8 @@ export default function App() {
     const DARK_SETTINGS_CONTAINER_TEXT = '#DBDADA'
     const LIGHT_SETTINGS_CONTAINTER_TEXT = '#292929'
 
-    const DARK_SETTINGS_HEADER = '#292929'
-    const LIGHT_SETTINGS_HEADER = '#DBDADA'
+    const DARK_SETTINGS_HEADER = '#DBDADA'
+    const LIGHT_SETTINGS_HEADER = '#4B4B4B'
 
     const DARK_BACKGROUND_NOTE_DONE = '#0C0C0C';
     const LIGHT_BACKGROUND_NOTE_DONE = '#F3F8F2';
@@ -56,13 +58,29 @@ export default function App() {
     const LIGHT_SPACER  = '#F2F2F6';
     const DARK_SPACER = '#151515';
 
-    const [isDarkModeActive, setIsDarkModeActive] = useState(false);
+    const LIGHT_SETTINGS_BACKGROUND = '#EEEEEE';
+    const DARK_SETTINGS_BACKGROUND = '#1A1A1A';
+
+    const DARK_BACKGROUND_UPDATE_FOLDER_BUTTON = '#0F0F0F';
+    const LIGHT_BACKGROUND_UPDATE_FOLDER_BUTTON = '#F2F3F8';
+    
+    const DARK_HEADER_UPDATE_FOLDER_BUTTON = '#303033'; 
+    const LIGHT_HEADER_UPDATE_FOLDER_BUTTON = '#E8E7EF';
+
+    const DARK_BACKGROUND_SETTINGS_BUTTONS = '#0F0F0F'
+    const LIGHT_BACKGROUND_SETTINGS_BUTTONS = '#FAFAFA'
+
+    const DARK_SETTINGS_BUTTONS_TEXT = '#DBDADA';
+    const LIGHT_SETTINGS_BUTTONS_TEXT = '#292929';
+
+    const [isDarkModeActive, setIsDarkModeActive] = useState(true);
 
     const {height, width} = useWindowDimensions();
     const [logoWrapperWrapperHeight, setLogoWrapperHeight] = useState(height * 0.125);
     const [noteTitleAndButtonHeight, setNoteTitleAndButtonHeight] = useState(height * 0.08);
     const [spacerWrapperHeight, setSpacerWrapperHeight] = useState(height * 0.03)
 
+    const [isLanguageSwitch, setIsLanguageSwitch] = useState(false);
 
     //setStatusBarBackgroundColor('rgba(255,255,255,0.5)');
     // listen to dimension change
@@ -71,7 +89,7 @@ export default function App() {
 
     return (
         <View style={[styles.appContainer, {
-            backgroundColor: isDarkModeActive ? '#222120' : '#FFF9F3',
+            backgroundColor: isDarkModeActive ? DARK_BACKGROUD : LIGHT_BACKGROUND,
             overflow: 'hidden'
         }]}>
                 <View style={[styles.logoWrapperWrapper, {
@@ -90,7 +108,7 @@ export default function App() {
                             adjustsFontSizeToFit
                         >QckNote</Text>
                     </View>
-                    <BlurView intensity={Platform.OS === 'ios' ? 8 : 4} style={[styles.blurLogoText,{
+                    <BlurView intensity={Platform.OS === 'ios' ? 8 : 4} style={[styles.blurView,{
                             // If there is lag, check this BlurView
                     }]}>
                     </BlurView>
@@ -104,6 +122,7 @@ export default function App() {
                 ]}>
                     <View
                         style={[styles.card, {
+                            zIndex: 100,
                             height: '90%',
                             backgroundColor: isDarkModeActive ? DARK_CARD : LIGHT_CARD,
                         }]}>
@@ -155,7 +174,7 @@ export default function App() {
                                 placeholder='Just start typing..' multiline={true}
                                 style={[styles.noteText,
                                     {
-                                        fontSize: 20, //need to fix this
+                                        fontSize: 20,
                                         color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
                                     }
                                 ]}
@@ -172,12 +191,11 @@ export default function App() {
                                 justifyContent: 'flex-end',
                             }
                         ]}>
-                            <Pressable style={[styles.validateButtonWrapperWrapper, {
-                                // need to fix this
+                            <Pressable style={[styles.validateButtonWrapper, {
                                 height: 90,
                                 width: 90,
                             }]}>
-                                <View  style={[styles.validateButtonWrapper,
+                                <View  style={[styles.validateButton,
                                     {
                                         borderRadius: 20,
                                         height: '80%',
@@ -189,18 +207,228 @@ export default function App() {
                                 ]}>
                                     {isDarkModeActive ? 
                                         <Image source={require('./assets/DarkButtonCheckmark.png')}
-                                            style={[styles.validateButton]}
+                                            style={[styles.validateButttonCheckmark]}
                                         >
                                         </Image>:
                                         <Image source={require('./assets/WhiteButtonCheckmark.png')}
-                                            style={[styles.validateButton]}
+                                            style={[styles.validateButttonCheckmark]}
                                         >
                                         </Image>
                                     }
                                 </View>
                             </Pressable>
                         </View>
+                        <View style={[styles.settingsWrapper,
+                            {
+                                opacity: 1,
+                                borderRadius: 20,
+                                position: 'absolute',
+                                height: '100%',
+                                width: '100%',
+                                backgroundColor: isDarkModeActive ? DARK_SETTINGS_BACKGROUND : LIGHT_SETTINGS_BACKGROUND,
+                                justifyContent: 'space-between'
+                            }
+                        ]}>
+                            <View style={{
+                                height: '90%',
+                                width: '100%',
+                                alignItems: 'center',
+                            }}>
+                                <View style={[styles.settingsTextWrapper,
+                                    {
+                                        height: '10%',
+                                        width: '100%',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }
+                                ]}>
+                                    <Text style={[styles.settingsText,
+                                        {
+                                            marginTop: '3%',
+                                            fontSize: 30,         
+                                            fontWeight: 700,
+                                            color: isDarkModeActive ? DARK_SETTINGS_HEADER : LIGHT_SETTINGS_HEADER,
+                                        }
+                                    ]}>SETTINGS</Text>
+                                </View>                            
+                                <View style={[styles.spacerWrapper,
+                                    {
+                                        height: spacerWrapperHeight,
+                                    }
+                                ]}>
+                                    <View style={[styles.spacer,
+                                        {
+                                            backgroundColor: isDarkModeActive ? DARK_SPACER : LIGHT_SPACER,
+                                        }
+                                    ]}>
+                                    </View>
+                                </View>
+                                <Pressable style={[styles.updateFolderButtonWrapper, 
+                                    {
+                                        borderRadius: 20,
+                                        marginBottom: '3%',
+                                        height: '13.3%',
+                                        width: '86.18%',
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_UPDATE_FOLDER_BUTTON : LIGHT_BACKGROUND_UPDATE_FOLDER_BUTTON,
+                                        marginTop: '5%',
+                                    }
+                                ]}>
+                                    <View style={[
+                                        {
+                                            height: '27%',
+                                            borderTopEndRadius: 20,
+                                            borderTopStartRadius: 20,
+                                            backgroundColor: isDarkModeActive ? DARK_HEADER_UPDATE_FOLDER_BUTTON : LIGHT_HEADER_UPDATE_FOLDER_BUTTON,
+                                        }
+                                    ]}>
+                                    </View>
+                                    <View style={[styles.updateFolderButton,
+                                        {
+                                            height: '77%',
+                                            width: '100%',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }
+                                    ]}>
+                                        <Text style={[styles.updateButtonText,
+                                            {
+                                                color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
+                                                fontWeight: 800,
+                                                fontSize: 19,
+                                                fontWeight: 600,
+                                                marginTop: -5,
+                                            }
+                                        ]}>Update Destination Folder</Text>
+                                    </View>
+                                </Pressable>
+                                <View style={[styles.buttonSettingsWrapper,
+                                    {
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                    }
+                                ]}>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            System  
+                                            Language
+                                        </Text>
+                                    </Pressable>
+                                    <View style={styles.settingsTogglePressable}>
+                                        <Switch></Switch>
+                                    </View>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            Force  English
+                                        </Text>
+                                    </Pressable>
+                                </View>
+                                <View style={[styles.buttonSettingsWrapper,
+                                    {
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                    }
+                                ]}>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            Note Text
+                                            On Top 
+                                        </Text>
+                                    </Pressable>
+                                    <Pressable style={styles.settingsTogglePressable}>
+                                        <Switch></Switch>
+                                    </Pressable>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            Note Text
+                                            On Bottom 
+                                        </Text>
+                                    </Pressable>
+                                </View>
+                                <View style={[styles.buttonSettingsWrapper,
+                                    {
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                    }
+                                ]}>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            Low Contrast 
+                                        </Text>
+                                    </Pressable>
+                                    <Pressable style={styles.settingsTogglePressable}>
+                                        <Switch></Switch> 
+                                    </Pressable>
+                                    <Pressable style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            High Contrast 
+                                        </Text>
+                                    </Pressable>
+                                </View>
+                                <View style={[styles.buttonSettingsWrapper,
+                                {
+                                    backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                }
+                            ]}>
+                                <Pressable style={styles.settingsPressable}>
+                                    <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                        {'Light\nMode'} 
+                                    </Text>
+                                </Pressable>
+                                <Pressable style={styles.settingsTogglePressable}>
+                                    <Switch></Switch>
+                                </Pressable>
+                                <Pressable style={styles.settingsPressable}>
+                                    <Text style={[styles.settingsPressableText,{
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                        {'Dark\nMode'} 
+                                    </Text>
+                                </Pressable>
+                            </View>
+                            </View>
+                            <View style={[styles.backHomeButtonWrapperWrapper, {
+                                height: '10%',
+                                width: '100%',
+                                alignItems: 'flex-end',
+                                justifyContent: 'flex-end',
+                            }
+                            ]}>
+                                <Pressable style={[styles.backHomeButtonWrapper, {
+                                    height: 90,
+                                    width: 90,
+                                }]}>
+                                    <View  style={[styles.backHomeButton,
+                                        {
+                                            borderRadius: 20,
+                                            height: '80%',
+                                            width: '80%',
+                                            backgroundColor: isDarkModeActive ? DARK_BACKGROUND_BACK_BUTTON : LIGHT_BACKGROUND_BACK_BUTTON,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        } 
+                                    ]}>
+                                        {isDarkModeActive ? 
+                                            <Image source={require('./assets/WhiteBackHomeIcon.png')}
+                                                style={[styles.backHomeButtonIcon]}
+                                            >
+                                            </Image>:
+                                            <Image source={require('./assets/WhiteBackHomeIcon.png')}
+                                                style={[styles.backHomeButtonIcon]}
+                                            >
+                                            </Image>
+                                        }
+                                    </View>
+                            </Pressable>
+                            </View>
+                        </View>
                     </View>
+                    <BlurView intensity={Platform.OS === 'ios' ? 8 : 4} style={[styles.blurView ,{
+                            // If there is lag, check this BlurView
+                    }]}>
+                    </BlurView>
                 </KeyboardAvoidingView>
         </View>
     );
@@ -232,7 +460,7 @@ const styles = StyleSheet.create({
         fontSize: 1000,
         textAlign: 'center',
     },
-    blurLogoText: {
+    blurView : {
         height: '100%',
         width: '100%',
         position: 'absolute',
@@ -285,9 +513,40 @@ const styles = StyleSheet.create({
     noteText: {
         width: '100%',
     },
-    validateButton: {
+    validateButttonCheckmark: {
         height: '42%',
         width: '42%',
         resizeMode: 'contain',
-    }
+    },
+    buttonSettingsWrapper: {
+        borderRadius: 20,
+        marginBottom: '3.3%',
+        height: '13.2%',
+        width: '86.18%',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+    settingsPressable: {
+        height: '100%',
+        width: '30%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    } ,
+    settingsTogglePressable: {
+        height: '100%',
+        width: '30%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    settingsPressableText: {
+        fontSize: 17,
+        textAlign: 'center',
+        fontWeight: 700,
+        marginBottom: '8%',
+    },
+    backHomeButtonIcon: {
+        height: '49%',
+        width: '49%',
+        resizeMode: 'contain',
+    },
 });
