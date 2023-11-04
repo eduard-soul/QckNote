@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image,  } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import * as FileSystem from 'expo-file-system';
@@ -93,8 +93,9 @@ export default function App() {
     const [isSettingsActive, setIsSettingsActive] = useState(false);
 
     const [permissions, setPermissions] = useState();
-    //setStatusBarBackgroundColor('rgba(255,255,255,0.5)');
-    // listen to dimension change
+
+    const textInputRef = useRef();
+
     const saveNote = async () => {
         console.log('press');
         if (note.length) {
@@ -122,7 +123,6 @@ export default function App() {
          setPermissions(await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync());
     }
     
-
     const createFile = async (filename, content) => {
         try {
             const fileUri = FileSystem.documentDirectory + filename;
@@ -160,8 +160,8 @@ export default function App() {
     };
 
     useEffect(() => {
-        //checkPermmisions();
-    }, []);
+        console.log('textInputRef', textInputRef.value);
+    }, [textInputRef]);
 
     return (
         <View style={[styles.appContainer, {
@@ -196,7 +196,7 @@ export default function App() {
                         width: '100%',
                     }
                 ]}>
-                    <View
+                    <Pressable
                         style={[styles.card, {
                             zIndex: 100,
                             height: '90%',
@@ -223,7 +223,6 @@ export default function App() {
                             </View>
                             <View style={[styles.settingsButtonWrapper,
                                 {
-                                    // Call this function to dismiss the keyboard}
                                 }
                             ]}>
                                 <Pressable onPress={() => {
@@ -252,40 +251,50 @@ export default function App() {
                             ]}>
                             </View>
                         </View>
-                        <View style={[styles.noteTextWrapper, {
-                        }]}
-                        >
-                            <TextInput 
-                                keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
-                                value={note} onChangeText={(e) => {setNote(e)}}
-                                placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
-                                placeholder='Just start typing..' 
-                                multiline autoFocus
-                                style={[styles.noteText,
-                                    {
-                                        textAlignVertical: isNoteBottom ? 'bottom' : 'top',
-                                        marginBottom: Platform.OS === 'ios' ? '9.5%' : '10%',
-                                        fontSize: 20,
-                                        color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
-                                    }
-                                ]}
-                            >
-                            </TextInput>
-                        </View>
-                        <View style={[
-                            {
-                                position: 'absolute',
-                                width: '100%',
-                                height: '10%',
-                                top: '90%',
-                                alignItems: 'flex-end',
-                                justifyContent: 'flex-end',
+                        <Pressable onPress={() => {
+                            if(Keyboard.isVisible()) {
+                                dismissKeyboard();
+                            } else if (textInputRef) {
+                               textInputRef.value.focus();
                             }
-                        ]}>
+                        }}
+                            style={[styles.noteTextWrapperWrapper,
+                                {
+                                    width: '100%',
+                                    height: '86%',
+                                    alignItems: 'center',
+                                }
+                            ]}
+                        >
+                            <View style={[styles.noteTextWrapper, {
+                            }]}
+                            >
+                                <TextInput 
+                                    ref={(input) => {textInputRef.value = input}}
+                                    keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
+                                    value={note} onChangeText={(e) => {setNote(e)}}
+                                    placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
+                                    placeholder='Just start typing..' 
+                                    multiline autoFocus
+                                    style={[styles.noteText,
+                                        {
+                                            textAlignVertical: isNoteBottom ? 'bottom' : 'top',
+                                            marginBottom: Platform.OS === 'ios' ? '9.5%' : '10%',
+                                            fontSize: 20,
+                                            color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
+                                        }
+                                    ]}
+                                >
+                                </TextInput>
+                            </View>
+                        </Pressable>
                             <Pressable onPress={saveNote}
                             style={[styles.validateButtonWrapper, {
-                                height: 90,
-                                    width: 90,
+                                    position: 'absolute',
+                                    left: '76.5%',
+                                    top: '85%',
+                                    width: '23.5%',
+                                    aspectRatio: 1,
                             }]}>
                                 <View  style={[styles.validateButton,
                                     {
@@ -309,7 +318,6 @@ export default function App() {
                                     }
                                 </View>
                             </Pressable>
-                        </View>
                         <View style={[styles.settingsWrapper,
                             {
                                 display: isSettingsActive ? 'flex' : 'none',
@@ -584,43 +592,38 @@ export default function App() {
                                 </Pressable>
                             </View>
                             </View>
-                            <View style={[styles.backHomeButtonWrapperWrapper, {
-                                height: '10%',
-                                width: '100%',
-                                alignItems: 'flex-end',
-                                justifyContent: 'flex-end',
-                            }
-                            ]}>
-                                <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
-                                style={[styles.backHomeButtonWrapper, {
-                                    height: 90,
-                                    width: 90,
-                                }]}>
-                                    <View  style={[styles.backHomeButton,
-                                        {
-                                            borderRadius: 20,
-                                            height: '80%',
-                                            width: '80%',
-                                            backgroundColor: isDarkModeActive ? DARK_BACKGROUND_BACK_BUTTON : LIGHT_BACKGROUND_BACK_BUTTON,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        } 
-                                    ]}>
-                                        {isDarkModeActive ? 
-                                            <Image source={require('./assets/WhiteBackHomeIcon.png')}
-                                                style={[styles.backHomeButtonIcon]}
-                                            >
-                                            </Image>:
-                                            <Image source={require('./assets/WhiteBackHomeIcon.png')}
-                                                style={[styles.backHomeButtonIcon]}
-                                            >
-                                            </Image>
-                                        }
-                                    </View>
+                            <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
+                            style={[styles.backHomeButtonWrapper, {
+                                    position: 'absolute',
+                                    left: '76.5%',
+                                    top: '85%',
+                                    width: '23.5%',
+                                    aspectRatio: 1,
+                            }]}>
+                                <View  style={[styles.backHomeButton,
+                                    {
+                                        borderRadius: 20,
+                                        height: '80%',
+                                        width: '80%',
+                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_BACK_BUTTON : LIGHT_BACKGROUND_BACK_BUTTON,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    } 
+                                ]}>
+                                    {isDarkModeActive ? 
+                                        <Image source={require('./assets/WhiteBackHomeIcon.png')}
+                                            style={[styles.backHomeButtonIcon]}
+                                        >
+                                        </Image>:
+                                        <Image source={require('./assets/WhiteBackHomeIcon.png')}
+                                            style={[styles.backHomeButtonIcon]}
+                                        >
+                                        </Image>
+                                    }
+                                </View>
                             </Pressable>
-                            </View>
                         </View>
-                    </View>
+                    </Pressable>
                     <BlurView intensity={Platform.OS === 'ios' ? 8 : 4} style={[styles.blurView ,{
                             // If there is lag, check this BlurView
                     }]}>
