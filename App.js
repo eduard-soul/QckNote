@@ -110,7 +110,6 @@ export default function App() {
             } 
             createFile(filename, note);
         }
-        //const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
     }
 
     const dismissKeyboard = () => {
@@ -126,6 +125,7 @@ export default function App() {
             const fileUri = FileSystem.documentDirectory + filename;
             await FileSystem.writeAsStringAsync(fileUri, content);
 
+            console.log(1);
             if (Platform.OS === 'ios') {
                 const share = await shareAsync(fileUri);
             } else if (Platform.OS === 'android') {
@@ -133,7 +133,9 @@ export default function App() {
 
                 if (!permissions) {
                     tempPermissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-                    setPermissions(tempPermissions);
+                    if (tempPermissions.granted) {
+                        setPermissions(tempPermissions);
+                    }
                 }
                 else {
                     tempPermissions = permissions; 
