@@ -97,7 +97,6 @@ export default function App() {
     const textInputRef = useRef();
 
     const saveNote = async () => {
-        console.log('press');
         if (note.length) {
             let filename = 'qck_note.txt';
 
@@ -126,7 +125,6 @@ export default function App() {
     const createFile = async (filename, content) => {
         try {
             const fileUri = FileSystem.documentDirectory + filename;
-            console.log(fileUri)
             await FileSystem.writeAsStringAsync(fileUri, content);
 
             if (Platform.OS === 'ios') {
@@ -145,7 +143,6 @@ export default function App() {
                     const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
                     await FileSystem.StorageAccessFramework.createFileAsync(tempPermissions.directoryUri, filename, 'text/plain')
                     .then(async (uri) => {
-                        console.log(uri);
                         await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
                     })
                     .catch(e => console.log(e));
@@ -160,7 +157,7 @@ export default function App() {
     };
 
     useEffect(() => {
-        console.log('textInputRef', textInputRef.value);
+        //console.log('textInputRef', textInputRef.value);
     }, [textInputRef]);
 
     return (
@@ -202,122 +199,130 @@ export default function App() {
                             height: '90%',
                             backgroundColor: isDarkModeActive ? DARK_CARD : LIGHT_CARD,
                         }]}>
-                        <View style={[styles.noteTitleAndButtonWrapper, {
-                            height: noteTitleAndButtonHeight,
-                        }]}>
-                            <View style={[styles.noteTitleWrapper, {
-                            }]}>
-                                <TextInput 
-                                    keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
-                                    value={noteTitle} onChangeText={(e) => {setNoteTitle(e)}}
-                                    placeholder='Optional title..' 
-                                    placeholderTextColor={isDarkModeActive ? DARK_NOTE_TITLE_PLACEHOLDER : LIGHT_NOTE_TITLE_PLACEHOLDER} 
-                                    style={[styles.noteTitle, {
-                                        marginTop: '5%',
-                                        height: '100%',
-                                        fontSize: noteTitleAndButtonHeight * 0.36,
-                                        left: '-1%',
-                                        color: isDarkModeActive ? DARK_NOTE_TITLE : LIGHT_NOTE_TITLE,
-                                    }]}
-                                ></TextInput>
-                            </View>
-                            <View style={[styles.settingsButtonWrapper,
-                                {
-                                }
-                            ]}>
-                                <Pressable onPress={() => {
-                                    dismissKeyboard();
-                                    setIsSettingsActive(!isSettingsActive);
-                                }}
-                                style={[styles.settingsButton,
-                                    {
-                                    }
-                                ]}>
-                                    <Image source={isDarkModeActive ? require('./assets/DarkSettingsIcon.png') : require('./assets/WhiteSettingsIcon.png')}
-                                     style={[styles.settingsButtonIcon, {
-                                    }]}></Image>
-                                </Pressable>
-                            </View>
-                        </View>
-                        <View style={[styles.spacerWrapper,
+                        <View style={[styles.topCardWrapper,
                             {
-                                height: spacerWrapperHeight,
+                                width: '100%',
+                                height: '75%',
+                                alignItems: 'center',
                             }
                         ]}>
-                            <View style={[styles.spacer,
+                            <View style={[styles.noteTitleAndButtonWrapper, {
+                                height: noteTitleAndButtonHeight,
+                            }]}>
+                                <View style={[styles.noteTitleWrapper, {
+                                }]}>
+                                    <TextInput 
+                                        keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
+                                        value={noteTitle} onChangeText={(e) => {setNoteTitle(e)}}
+                                        placeholder='Optional title..' 
+                                        placeholderTextColor={isDarkModeActive ? DARK_NOTE_TITLE_PLACEHOLDER : LIGHT_NOTE_TITLE_PLACEHOLDER} 
+                                        style={[styles.noteTitle, {
+                                            marginTop: '5%',
+                                            height: '100%',
+                                            fontSize: noteTitleAndButtonHeight * 0.36,
+                                            left: '-1%',
+                                            color: isDarkModeActive ? DARK_NOTE_TITLE : LIGHT_NOTE_TITLE,
+                                        }]}
+                                    ></TextInput>
+                                </View>
+                                <View style={[styles.settingsButtonWrapper,
+                                    {
+                                    }
+                                ]}>
+                                    <Pressable onPress={() => {
+                                        dismissKeyboard();
+                                        setIsSettingsActive(!isSettingsActive);
+                                    }}
+                                    style={[styles.settingsButton,
+                                        {
+                                        }
+                                    ]}>
+                                        <Image source={isDarkModeActive ? require('./assets/DarkSettingsIcon.png') : require('./assets/WhiteSettingsIcon.png')}
+                                        style={[styles.settingsButtonIcon, {
+                                        }]}></Image>
+                                    </Pressable>
+                                </View>
+                            </View>
+                            <View style={[styles.spacerWrapper,
                                 {
-                                    backgroundColor: isDarkModeActive ? DARK_SPACER : LIGHT_SPACER,
+                                    height: spacerWrapperHeight,
                                 }
                             ]}>
-                            </View>
-                        </View>
-                        <Pressable onPress={() => {
-                            if(Keyboard.isVisible()) {
-                                dismissKeyboard();
-                            } else if (textInputRef) {
-                               textInputRef.value.focus();
-                            }
-                        }}
-                            style={[styles.noteTextWrapperWrapper,
-                                {
-                                    width: '100%',
-                                    height: '86%',
-                                    alignItems: 'center',
-                                }
-                            ]}
-                        >
-                            <View style={[styles.noteTextWrapper, {
-                            }]}
-                            >
-                                <TextInput 
-                                    ref={(input) => {textInputRef.value = input}}
-                                    keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
-                                    value={note} onChangeText={(e) => {setNote(e)}}
-                                    placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
-                                    placeholder='Just start typing..' 
-                                    multiline autoFocus
-                                    style={[styles.noteText,
-                                        {
-                                            textAlignVertical: isNoteBottom ? 'bottom' : 'top',
-                                            marginBottom: Platform.OS === 'ios' ? '9.5%' : '10%',
-                                            fontSize: 20,
-                                            color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
-                                        }
-                                    ]}
-                                >
-                                </TextInput>
-                            </View>
-                        </Pressable>
-                            <Pressable onPress={saveNote}
-                            style={[styles.validateButtonWrapper, {
-                                    position: 'absolute',
-                                    left: '76.5%',
-                                    top: '85%',
-                                    width: '23.5%',
-                                    aspectRatio: 1,
-                            }]}>
-                                <View  style={[styles.validateButton,
+                                <View style={[styles.spacer,
                                     {
-                                        borderRadius: 20,
-                                        height: '80%',
-                                        width: '80%',
-                                        backgroundColor: isDarkModeActive ? DARK_BACKGROUND_DONE_BUTTON : LIGHT_BACKGROUND_DONE_BUTTON,
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                    } 
-                                ]}>
-                                    {isDarkModeActive ? 
-                                        <Image source={require('./assets/DarkButtonCheckmark.png')}
-                                            style={[styles.validateButttonCheckmark]}
-                                        >
-                                        </Image>:
-                                        <Image source={require('./assets/WhiteButtonCheckmark.png')}
-                                            style={[styles.validateButttonCheckmark]}
-                                        >
-                                        </Image>
+                                        backgroundColor: isDarkModeActive ? DARK_SPACER : LIGHT_SPACER,
                                     }
+                                ]}>
+                                </View>
+                            </View>
+                            <Pressable style={[styles.noteTextWrapperWrapper,
+                                    {
+                                        width: '100%',
+                                        height: '116%',
+                                        alignItems: 'center',
+                                    }
+                                ]}
+                                onPress={() => {
+                                    if(Keyboard.isVisible()) {
+                                        dismissKeyboard();
+                                    } else {
+                                        this.secondTextInput.focus();
+                                    }
+                                }}
+                            >
+                                <View style={[styles.noteTextWrapper, {
+                                }]}
+                                >
+                                    <TextInput 
+                                        blurOnSubmit={false}
+                                        ref={(input) => { this.secondTextInput = input; }}
+                                        //ref={(input) => {textInputRef.value = input}}
+                                        keyboardAppearance={isDarkModeActive && Platform.OS === 'ios' ? 'dark' : 'light'}
+                                        value={note} onChangeText={(e) => {setNote(e)}}
+                                        placeholderTextColor={isDarkModeActive ? DARK_NOTE_TEXT_PLACEHOLDER : LIGHT_NOTE_TEXT_PLACEHOLDER} 
+                                        placeholder='Just start typing..' 
+                                        multiline autoFocus
+                                        style={[styles.noteText,
+                                            {
+                                                textAlignVertical: isNoteBottom ? 'bottom' : 'top',
+                                                marginBottom: Platform.OS === 'ios' ? '9.5%' : '10%',
+                                                fontSize: 20,
+                                                color: isDarkModeActive ? DARK_NOTE_TEXT : LIGHT_NOTE_TEXT,
+                                            }
+                                        ]}
+                                    >
+                                    </TextInput>
                                 </View>
                             </Pressable>
+                        </View>
+                        <Pressable onPress={saveNote}
+                        style={[styles.validateButtonWrapper, {
+                                width: '23.5%',
+                                aspectRatio: 1,
+                                justifyContent: 'flex-start',
+                        }]}>
+                            <View  style={[styles.validateButton,
+                                {
+                                    borderRadius: 20,
+                                    height: '80%',
+                                    width: '80%',
+                                    backgroundColor: isDarkModeActive ? DARK_BACKGROUND_DONE_BUTTON : LIGHT_BACKGROUND_DONE_BUTTON,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                } 
+                            ]}>
+                                {isDarkModeActive ? 
+                                    <Image source={require('./assets/DarkButtonCheckmark.png')}
+                                        style={[styles.validateButttonCheckmark]}
+                                    >
+                                    </Image>:
+                                    <Image source={require('./assets/WhiteButtonCheckmark.png')}
+                                        style={[styles.validateButttonCheckmark]}
+                                    >
+                                    </Image>
+                                }
+                            </View>
+                        </Pressable>
                         <View style={[styles.settingsWrapper,
                             {
                                 display: isSettingsActive ? 'flex' : 'none',
@@ -331,13 +336,13 @@ export default function App() {
                             }
                         ]}>
                             <View style={{
-                                height: '90%',
+                                height: '80%',
                                 width: '100%',
                                 alignItems: 'center',
                             }}>
                                 <View style={[styles.settingsTextWrapper,
                                     {
-                                        height: '10%',
+                                        height: noteTitleAndButtonHeight,
                                         width: '100%',
                                         justifyContent: 'center',
                                         alignItems: 'center',
@@ -418,7 +423,9 @@ export default function App() {
                                             Language
                                         </Text>
                                     </Pressable>
-                                    <View style={styles.settingsTogglePressable}>
+                                    <View style={[styles.settingsTogglePressable, {
+                                        opacity: 0.35,
+                                    }]}>
                                         <Switch
                                             onChange={() => {setIsLanguageForced(!isLanguageForced)}}
                                             whichSwitch={'language'}
@@ -482,7 +489,9 @@ export default function App() {
                                             Low Contrast 
                                         </Text>
                                     </Pressable>
-                                    <Pressable style={styles.settingsTogglePressable}>
+                                    <Pressable style={[styles.settingsTogglePressable, {
+                                        opacity: 0.35,
+                                    }]}>
                                         <Switch
                                             onChange={() => {setIsHighContrast(!isHighContrast)}}
                                             whichSwitch={'contrast'}
@@ -565,41 +574,38 @@ export default function App() {
                                     backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
                                 }
                             ]}>
-                                <Pressable onPress={() => {
-                                    setIsDarkModeActive(false);
-                                }}
+                                    <Pressable onPress={() => {
+                                        setIsDarkModeActive(false);
+                                    }}
+                                        style={styles.settingsPressable}>
+                                        <Text style={[styles.settingsPressableText,{
+                                                color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            {'Light\nMode'} 
+                                        </Text>
+                                    </Pressable>
+                                    <Pressable style={styles.settingsTogglePressable}>
+                                        <Switch 
+                                            onChange={() => {setIsDarkModeActive(!isDarkModeActive)}}
+                                            whichSwitch={'nightMode'}
+                                            isActive={isDarkModeActive}
+                                        ></Switch>
+                                    </Pressable>
+                                    <Pressable onPress={() => {
+                                        setIsDarkModeActive(true);
+                                    }}
                                     style={styles.settingsPressable}>
-                                    <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
-                                        {'Light\nMode'} 
-                                    </Text>
-                                </Pressable>
-                                <Pressable style={styles.settingsTogglePressable}>
-                                    <Switch 
-                                        onChange={() => {setIsDarkModeActive(!isDarkModeActive)}}
-                                        whichSwitch={'nightMode'}
-                                        isActive={isDarkModeActive}
-                                    ></Switch>
-                                </Pressable>
-                                <Pressable onPress={() => {
-                                    setIsDarkModeActive(true);
-                                }}
-                                style={styles.settingsPressable}>
-                                    <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
-                                        {'Dark\nMode'} 
-                                    </Text>
-                                </Pressable>
+                                        <Text style={[styles.settingsPressableText,{
+                                                color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            {'Dark\nMode'} 
+                                        </Text>
+                                    </Pressable >
+                                </View>
                             </View>
-                            </View>
-                            <Pressable onPress={() => {setIsSettingsActive(!isSettingsActive)}}
-                            style={[styles.backHomeButtonWrapper, {
-                                    position: 'absolute',
+                            <Pressable style={[styles.backHomeButtonWrapper, {
                                     left: '76.5%',
-                                    top: '85%',
                                     width: '23.5%',
                                     aspectRatio: 1,
-                            }]}>
+                            }]} onPress={() => {setIsSettingsActive(!isSettingsActive)}}>
                                 <View  style={[styles.backHomeButton,
                                     {
                                         borderRadius: 20,
@@ -645,7 +651,8 @@ const styles = StyleSheet.create({
     card: {
         width: '90%',
         borderRadius: 20,
-        alignItems: 'center',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between'
     },
     logoWrapperWrapper: {
         width: '100%',
@@ -666,7 +673,6 @@ const styles = StyleSheet.create({
     },
     noteTitleAndButtonWrapper: {
         flexDirection: 'row',
-        height: '10%',
         width: '90%',
     },
     noteTitleWrapper: {
@@ -720,7 +726,7 @@ const styles = StyleSheet.create({
     buttonSettingsWrapper: {
         borderRadius: 20,
         marginBottom: '3.3%',
-        height: '13.2%',
+        height: '12.5%',
         width: '86.18%',
         justifyContent: 'center',
         flexDirection: 'row',
