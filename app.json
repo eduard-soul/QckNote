@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TEST_xTiMovies",
-    "slug": "TEST_xTiMovies",
+    "name": "QckNote",
+    "slug": "QckNote",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.aeon.qcknote"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "548a3b34-b8bf-4ed6-905f-ea8889d8b238"
+      }
     }
   }
 }
