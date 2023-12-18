@@ -319,14 +319,17 @@ export default function App() {
                                 }
                             </View>
                         </Pressable>
-                        <View style={[styles.settingsWrapper,
+
+                    </Pressable>
+                    <View style={[styles.settingsWrapper,
                             {
                                 display: isSettingsActive ? 'flex' : 'none',
                                 opacity: 1,
                                 borderRadius: 20,
                                 position: 'absolute',
-                                height: '100%',
-                                width: '100%',
+                                height: '90%',
+                                width: '90%',
+                                zIndex: 100,
                                 backgroundColor: isDarkModeActive ? DARK_SETTINGS_BACKGROUND : LIGHT_SETTINGS_BACKGROUND,
                                 justifyContent: 'space-between'
                             }
@@ -627,7 +630,6 @@ export default function App() {
                                 </View>
                             </Pressable>
                         </View>
-                    </Pressable>
                     <BlurView intensity={Platform.OS === 'ios' ? 8 : 4} style={[styles.blurView ,{
                             // If there is lag, check this BlurView
                     }]}>
