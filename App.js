@@ -280,6 +280,7 @@ export default function App() {
                                         multiline autoFocus
                                         style={[styles.noteText,
                                             {
+                                                height: '100%',
                                                 textAlignVertical: isNoteBottom ? 'bottom' : 'top',
                                                 marginBottom: Platform.OS === 'ios' ? '3%' : '0%',
                                                 fontSize: 20,
