@@ -94,6 +94,7 @@ export default function App() {
 
     const [permissions, setPermissions] = useState();
 
+    const [animationDone, setAnimationDone] = useState(false);
 
     const saveNote = async () => {
         if (note.length) {
@@ -145,6 +146,7 @@ export default function App() {
                     await FileSystem.StorageAccessFramework.createFileAsync(tempPermissions.directoryUri, filename, 'text/plain')
                     .then(async (uri) => {
                         await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
+                        console.log("android");
                     })
                     .catch(e => console.log(e));
                 } else {
@@ -298,6 +300,18 @@ export default function App() {
                                 aspectRatio: 1,
                                 justifyContent: 'flex-start',
                         }]}>
+                            <View style={{
+                                    position: 'absolute',
+                                    borderRadius: 20,
+                                    height: '80%',
+                                    width: '80%',
+                                    backgroundColor: 'red',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    zIndex: 3000,
+                            }}>
+
+                            </View>
                             <View  style={[styles.validateButton,
                                 {
                                     borderRadius: 20,

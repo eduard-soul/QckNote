@@ -2,9 +2,9 @@
   "expo": {
     "name": "QckNote",
     "slug": "QckNote",
-    "version": "1.0.0",
+    "version": "0.0.1b",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon_light.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon_light.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.aeon.qcknote"
@@ -27,9 +27,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "eduard_soul",
     "extra": {
       "eas": {
-        "projectId": "548a3b34-b8bf-4ed6-905f-ea8889d8b238"
+        "projectId": "6686b71f-05c0-45e3-afc9-b3115ca60d94"
       }
     }
   }
