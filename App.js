@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image,  } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
 import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import Switch from './components/Switch';
-
 import { BlurView } from 'expo-blur'
 
 // REACT NATIVE APP
@@ -95,20 +94,31 @@ export default function App() {
     const [permissions, setPermissions] = useState();
 
     const [animationDone, setAnimationDone] = useState(false);
+    const widthDone = useSharedValue(30);
+    const heightDone = useSharedValue(30);
 
-    const saveNote = async () => {
+    const getFilename = async () => {
         if (note.length) {
             let filename = 'qck_note.txt';
 
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1; // Months are zero-based, so we add 1
+            const day = currentDate.getDate();
+            const seconds = currentDate.getSeconds();
+
+            const formattedDate = `${year}${month}${day}${seconds}`;
+
+            console.log(formattedDate);
             if (noteTitle.length) {
-                filename = noteTitle + '.txt';
-            } else if (note.length > 10) {
-                let temp = note.substring(0, 10) + '.txt';
-                filename = temp.replace(/[^a-zA-Z0-9]/g, '');
-                if (!filename) {
-                    filename = 'qck_note.txt';
-                }
-            } 
+                filename = noteTitle.replace(/[^a-zA-Z0-9]/g, '') + formattedDate + '.txt';
+            } else if (note.length > 2) {
+                filename = note.replace(/[^a-zA-Z0-9]/g, '');
+                filename = filename.substring(0, 10) + formattedDate + '.txt';
+            }
+            else {
+                filename = filename + formattedDate;
+            }
             createFile(filename, note);
         }
     }
@@ -146,9 +156,12 @@ export default function App() {
                     await FileSystem.StorageAccessFramework.createFileAsync(tempPermissions.directoryUri, filename, 'text/plain')
                     .then(async (uri) => {
                         await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
-                        console.log("android");
+                        //setAnimationDone(true);
                     })
-                    .catch(e => console.log(e));
+                    .catch((e) => {
+                        console.log("ERROR CREATING FILE")
+                        console.log(e)
+                    });
                 } else {
                     shareAsync(uri);
                 }
@@ -158,6 +171,16 @@ export default function App() {
             console.error(`Error creating file ${filename}: ${error}`);
         }
     };
+
+    useEffect(() => {
+        if (animationDone) {
+            widthDone.value = withSpring(widthDone.value + 300);
+            heightDone.value = withSpring(heightDone.value + 300);
+            widthDone.value = withDelay(500, withSpring(30));
+            heightDone.value = withDelay(500, withSpring(30));
+            setAnimationDone(false);
+        } 
+    }, [animationDone]);
 
     return (
         <View style={[styles.appContainer, {
@@ -294,23 +317,26 @@ export default function App() {
                                 </View>
                             </Pressable>
                         </View>
-                        <Pressable onPress={saveNote}
+
+                        <Pressable onPress={getFilename}
                         style={[styles.validateButtonWrapper, {
                                 width: '23.5%',
                                 aspectRatio: 1,
                                 justifyContent: 'flex-start',
                         }]}>
                             <View style={{
-                                    position: 'absolute',
-                                    borderRadius: 20,
-                                    height: '80%',
-                                    width: '80%',
-                                    backgroundColor: 'red',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    zIndex: 3000,
+                                position: 'absolute',
+                                height: '100%',
+                                width: '100%',
+                                backgroundColor: 'green',
+                                justifyContent: 'center',
+                                alignItems: 'center',
                             }}>
-
+                                <Animated.View style={{
+                                    height: heightDone,
+                                    width: widthDone,
+                                    backgroundColor: 'red',
+                                }}/>
                             </View>
                             <View  style={[styles.validateButton,
                                 {
