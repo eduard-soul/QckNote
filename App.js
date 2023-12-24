@@ -94,8 +94,8 @@ export default function App() {
     const [permissions, setPermissions] = useState();
 
     const [animationDone, setAnimationDone] = useState(false);
-    const widthDone = useSharedValue(70);
-    const heightDone = useSharedValue(70);
+    const widthDone = useSharedValue(50);
+    const heightDone = useSharedValue(50);
 
     const zIndexAnimationDone = useSharedValue(0);
 
@@ -181,9 +181,9 @@ export default function App() {
     useEffect(() => {
         if (animationDone) {
             widthDone.value = withSequence(withTiming(3000), 
-                withDelay(500, withTiming(70)));
+                withDelay(500, withTiming(50)));
             heightDone.value = withSequence(withTiming(3000), 
-                withDelay(500, withTiming(70)));
+                withDelay(500, withTiming(50)));
             zIndexAnimationDone.value = withSequence(withDelay(200,withTiming(3000)), 
                 withDelay(250, withTiming(0)));
             setAnimationDone(false);
@@ -253,6 +253,8 @@ export default function App() {
                             zIndex: 100,
                             height: '90%',
                             backgroundColor: isDarkModeActive ? DARK_CARD : LIGHT_CARD,
+                            elevation: 3,
+                            shadowColor: isDarkModeActive ? 'grey' : 'black',
                         }]}>
                         <View style={[styles.topCardWrapper,
                             {
@@ -306,6 +308,8 @@ export default function App() {
                                 <View style={[styles.spacer,
                                     {
                                         backgroundColor: isDarkModeActive ? DARK_SPACER : LIGHT_SPACER,
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     }
                                 ]}>
                                 </View>
@@ -376,6 +380,8 @@ export default function App() {
                                     borderRadius: 20,
                                     height: '80%',
                                     width: '80%',
+                                    elevation: 3,
+                                    shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     backgroundColor: isDarkModeActive ? DARK_BACKGROUND_DONE_BUTTON : LIGHT_BACKGROUND_DONE_BUTTON,
                                     justifyContent: 'center',
                                     alignItems: 'center',
@@ -438,6 +444,8 @@ export default function App() {
                                     <View style={[styles.spacer,
                                         {
                                             backgroundColor: isDarkModeActive ? DARK_SPACER : LIGHT_SPACER,
+                                            elevation: 3,
+                                            shadowColor: isDarkModeActive ? 'grey' : 'black',
                                         }
                                     ]}>
                                     </View>
@@ -452,6 +460,8 @@ export default function App() {
                                         width: '86.18%',
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_UPDATE_FOLDER_BUTTON : LIGHT_BACKGROUND_UPDATE_FOLDER_BUTTON,
                                         marginTop: '5%',
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     }
                                 ]}>
                                     <View style={[
@@ -484,13 +494,15 @@ export default function App() {
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
                                         marginTop: Platform.OS === 'android' ? '0%' : '5%',
                                         overflow: 'hidden',
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     }
                                 ]}>
                                     <Pressable onPress={() => {setIsLanguageForced(false)}}
                                      style={styles.settingsPressable}>
                                         <Text style={[styles.settingsPressableText,{
                                             //color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
-                                            color: 'grey'
+                                            color: 'grey',
                                             }]}>
                                             System  
                                             Language
@@ -552,6 +564,8 @@ export default function App() {
                                     {
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
                                         overflow: 'hidden',
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     }
                                 ]}>
                                     <Pressable onPress={() => {setIsHighContrast(false)}}
@@ -618,12 +632,16 @@ export default function App() {
                                 <View style={[styles.buttonSettingsWrapper,
                                     {
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                     }
                                 ]}>
                                     <Pressable onPress={() => {setIsNoteBottom(false)}}
-                                    style={styles.settingsPressable}>
+                                    style={[styles.settingsPressable, {
+                                    }]}>
                                         <Text style={[styles.settingsPressableText,{
-                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,}]}>
+                                            color: isDarkModeActive ? DARK_SETTINGS_BUTTONS_TEXT : LIGHT_SETTINGS_BUTTONS_TEXT,
+                                            }]}>
                                             Note Text
                                             On Top 
                                         </Text>
@@ -647,6 +665,8 @@ export default function App() {
                                 <View style={[styles.buttonSettingsWrapper,
                                 {
                                     backgroundColor: isDarkModeActive ? DARK_BACKGROUND_SETTINGS_BUTTONS : LIGHT_BACKGROUND_SETTINGS_BUTTONS,
+                                    elevation: 3,
+                                    shadowColor: isDarkModeActive ? 'grey' : 'black',
                                 }
                             ]}>
                                     <Pressable onPress={() => {
@@ -687,6 +707,8 @@ export default function App() {
                                         height: '80%',
                                         width: '80%',
                                         backgroundColor: isDarkModeActive ? DARK_BACKGROUND_BACK_BUTTON : LIGHT_BACKGROUND_BACK_BUTTON,
+                                        elevation: 3,
+                                        shadowColor: isDarkModeActive ? 'grey' : 'black',
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                     } 
