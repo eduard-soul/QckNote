@@ -236,6 +236,7 @@ export default function App() {
                         <Text style={{
                             fontSize: 50,
                             fontWeight: 700,
+                            color: isDarkModeActive ? 'white' : 'black'
                         }}>SAVED</Text>
                         {isDarkModeActive ? 
                             <Image source={require('./assets/DarkButtonCheckmark.png')}
