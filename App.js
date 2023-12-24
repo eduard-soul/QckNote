@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View, Dimensions, Keyboard, useWindowDimensions, Image,  } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import Switch from './components/Switch';
@@ -94,8 +94,15 @@ export default function App() {
     const [permissions, setPermissions] = useState();
 
     const [animationDone, setAnimationDone] = useState(false);
-    const widthDone = useSharedValue(30);
-    const heightDone = useSharedValue(30);
+    const widthDone = useSharedValue(70);
+    const heightDone = useSharedValue(70);
+
+    const zIndexAnimationDone = useSharedValue(0);
+
+    const heightDoneText = useSharedValue(70);
+    const widthDoneText = useSharedValue(70);
+
+    const doneTextTop = useSharedValue(300);
 
     const getFilename = async () => {
         if (note.length) {
@@ -156,11 +163,10 @@ export default function App() {
                     await FileSystem.StorageAccessFramework.createFileAsync(tempPermissions.directoryUri, filename, 'text/plain')
                     .then(async (uri) => {
                         await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
-                        //setAnimationDone(true);
+                        setAnimationDone(true);
                     })
                     .catch((e) => {
                         console.log("ERROR CREATING FILE")
-                        console.log(e)
                     });
                 } else {
                     shareAsync(uri);
@@ -174,10 +180,12 @@ export default function App() {
 
     useEffect(() => {
         if (animationDone) {
-            widthDone.value = withSpring(widthDone.value + 300);
-            heightDone.value = withSpring(heightDone.value + 300);
-            widthDone.value = withDelay(500, withSpring(30));
-            heightDone.value = withDelay(500, withSpring(30));
+            widthDone.value = withSequence(withTiming(3000), 
+                withDelay(500, withTiming(70)));
+            heightDone.value = withSequence(withTiming(3000), 
+                withDelay(500, withTiming(70)));
+            zIndexAnimationDone.value = withSequence(withDelay(200,withTiming(3000)), 
+                withDelay(250, withTiming(0)));
             setAnimationDone(false);
         } 
     }, [animationDone]);
@@ -215,6 +223,31 @@ export default function App() {
                         width: '100%',
                     }
                 ]}>
+                    <Animated.View style={{
+                        position: 'absolute',
+                        height: '20%',
+                        width: '50%',
+                        top: '30%',
+                        left: '25%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: zIndexAnimationDone,
+                    }}>
+                        <Text style={{
+                            fontSize: 50,
+                            fontWeight: 700,
+                        }}>SAVED</Text>
+                        {isDarkModeActive ? 
+                            <Image source={require('./assets/DarkButtonCheckmark.png')}
+                                style={[styles.validateButttonCheckmark]}
+                            >
+                            </Image>:
+                            <Image source={require('./assets/WhiteButtonCheckmark.png')}
+                                style={[styles.validateButttonCheckmark]}
+                            >
+                            </Image>
+                        }
+                    </Animated.View>
                     <Pressable
                         style={[styles.card, {
                             zIndex: 100,
@@ -326,16 +359,16 @@ export default function App() {
                         }]}>
                             <View style={{
                                 position: 'absolute',
-                                height: '100%',
-                                width: '100%',
-                                backgroundColor: 'green',
+                                height: '80%',
+                                width: '80%',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                             }}>
                                 <Animated.View style={{
                                     height: heightDone,
                                     width: widthDone,
-                                    backgroundColor: 'red',
+                                    borderRadius: 100,
+                                    backgroundColor: isDarkModeActive ? DARK_BACKGROUND_DONE_BUTTON : LIGHT_BACKGROUND_DONE_BUTTON,
                                 }}/>
                             </View>
                             <View  style={[styles.validateButton,
