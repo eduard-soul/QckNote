@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 import Switch from './components/Switch';
 import { BlurView } from 'expo-blur'
+import UnderConstruction from './components/UnderConstruction';
 
 // REACT NATIVE APP
 
@@ -61,7 +62,7 @@ export default function App() {
     const DARK_SPACER = '#151515';
 
     const LIGHT_SETTINGS_BACKGROUND = '#EEEEEE';
-    const DARK_SETTINGS_BACKGROUND = '#1A1A1A';
+    const DARK_SETTINGS_BACKGROUND = '#101010';
 
     const DARK_BACKGROUND_UPDATE_FOLDER_BUTTON = '#0F0F0F';
     const LIGHT_BACKGROUND_UPDATE_FOLDER_BUTTON = '#F2F3F8';
@@ -304,7 +305,7 @@ export default function App() {
                             <View style={[styles.spacerWrapper,
                                 {
                                     height: spacerWrapperHeight,
-                                }
+}
                             ]}>
                                 <View style={[styles.spacer,
                                     {
@@ -471,8 +472,11 @@ export default function App() {
                                             borderTopEndRadius: 20,
                                             borderTopStartRadius: 20,
                                             backgroundColor: isDarkModeActive ? DARK_HEADER_UPDATE_FOLDER_BUTTON : LIGHT_HEADER_UPDATE_FOLDER_BUTTON,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
                                         }
                                     ]}>
+                                        <Text>Current Folder :</Text>
                                     </View>
                                     <View style={[styles.updateFolderButton,
                                         {
@@ -527,39 +531,7 @@ export default function App() {
                                             Force  English
                                         </Text>
                                     </Pressable>
-                                    <View style={[styles.underConstructionWrapper,
-                                        {
-                                            position: 'absolute',
-                                            height: '100%',
-                                            width: '100%',
-                                            borderRadius: 20,
-                                            opacity: isDarkModeActive ? 0.05 : 0.1,
-                                            flexDirection: 'row',
-                                            left: '-15%',
-                                            top: '8%'
-                                        }
-                                    ]}>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                    </View>
+                                    <UnderConstruction isDarkModeActive={isDarkModeActive}></UnderConstruction>
                                 </View>
                                 <View style={[styles.buttonSettingsWrapper,
                                     {
@@ -596,39 +568,7 @@ export default function App() {
                                             High Contrast 
                                         </Text>
                                     </Pressable>
-                                    <View style={[styles.underConstructionWrapper,
-                                        {
-                                            position: 'absolute',
-                                            height: '100%',
-                                            width: '100%',
-                                            borderRadius: 20,
-                                            opacity: isDarkModeActive ? 0.05 : 0.1,
-                                            flexDirection: 'row',
-                                            left: '-13%',
-                                            top: '8%'
-                                        }
-                                    ]}>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'yellow',transform: 'rotate(45deg)'}}></View>
-                                        <View style={{top: '-10%', left: '-20%', height: '180%', width: '6%', marginLeft: '1%', backgroundColor: 'black',transform: 'rotate(45deg)'}}></View>
-                                    </View>
+                                    <UnderConstruction isDarkModeActive={isDarkModeActive}></UnderConstruction>
                                 </View>
                                 <View style={[styles.buttonSettingsWrapper,
                                     {
